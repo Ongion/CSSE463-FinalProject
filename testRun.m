@@ -20,7 +20,8 @@ xlabel('\theta (degrees)'), ylabel('\rho');
 axis on, axis normal, hold on;
 colormap(hot)
 
-peaks = houghpeaks(H,27);
+%There shouldn't be more than 20 lines in a sudoku board
+peaks = houghpeaks(H,20); 
 
 
 x = theta(peaks(:,2));
@@ -38,22 +39,34 @@ plot(x,y,'s','color','black');
 
 lines = houghlines(hopefullyBoard,theta,rho,peaks);
 
-figure, imshow(resizedInput), hold on
-max_len = 0;
-for k = 1:length(lines)
-   xy = [lines(k).point1; lines(k).point2];
-   plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');
+slopes = -cos(x*pi/180)./sin(x*pi/180);
+intercepts = y./sin(x*pi/180);
 
-   % Plot beginnings and ends of lines
-   plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-   plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
-
-   % Determine the endpoints of the longest line segment
-   len = norm(lines(k).point1 - lines(k).point2);
-   if ( len > max_len)
-      max_len = len;
-      xy_long = xy;
-   end
-end
+% Corners listed as (x,y), in order TopLeft, BottomLeft, BottomRight, TopRight
+corners = zeros(4,2);
+corners(1,1) = (intercepts(3)-intercepts(1))/(slopes(1)-slopes(3));
+corners(1,2) = slopes(1)*corners(1,1)+intercepts(1);
+corners(2,1) = (intercepts(3)-intercepts(2))/(slopes(2)-slopes(3));
+corners(2,2) = slopes(2)*corners(2,1)+intercepts(2);
+corners(3,1) = (intercepts(4)-intercepts(2))/(slopes(2)-slopes(4));
+corners(3,2) = slopes(2)*corners(3,1)+intercepts(2);
+corners(4,1) = (intercepts(4)-intercepts(1))/(slopes(1)-slopes(4));
+corners(4,2) = slopes(1)*corners(4,1)+intercepts(1);
 
 
+%tform = projective2d([corners(1,1),corners(1,2),corners(2,1);
+%                                   corners(2,2),corners(3,1),corners(3,2);
+%                                   corners(4,1),corners(4,2),1]);
+
+
+Xp = [1;1;512;512];
+Yp = [1;512;512;1];
+
+tform = fitgeotrans(corners,[Xp,Yp],'projective');
+[warpedImage, Rout] = imwarp(resizedInput,tform);
+nY = floor(abs(Rout.XWorldLimits(1)));
+nX = floor(abs(Rout.YWorldLimits(1)));
+nX = nX:nX+512;
+nY = nY:nY+512;
+output = warpedImage(nX,nY);
+imtool(output);
