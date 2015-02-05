@@ -64,8 +64,8 @@ Yp = [1;512;512;1];
 
 tform = fitgeotrans(corners,[Xp,Yp],'projective');
 [warpedImage, Rout] = imwarp(resizedInput,tform);
-nY = floor(abs(Rout.XWorldLimits(1)));
-nX = floor(abs(Rout.YWorldLimits(1)));
+nY = floor(abs(Rout.XWorldLimits(1)))+3;
+nX = floor(abs(Rout.YWorldLimits(1)))+3;
 nX = nX:nX+511;
 nY = nY:nY+511;
 output = warpedImage(nX,nY,:);
