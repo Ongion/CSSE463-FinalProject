@@ -1,7 +1,7 @@
 clear all;
 input = imread('testSudoku.jpg');
-resizedInput = imresize(input, 1/3);
-threshed = adaptiveThreshold(resizedInput,0.9, 10);
+resizedInput = imresize(input, 1);
+threshed = adaptiveThreshold(resizedInput,0.90, 50);
 
 labeledImg = bwlabel(threshed);
 
@@ -66,7 +66,7 @@ tform = fitgeotrans(corners,[Xp,Yp],'projective');
 [warpedImage, Rout] = imwarp(resizedInput,tform);
 nY = floor(abs(Rout.XWorldLimits(1)));
 nX = floor(abs(Rout.YWorldLimits(1)));
-nX = nX:nX+512;
-nY = nY:nY+512;
-output = warpedImage(nX,nY);
+nX = nX:nX+511;
+nY = nY:nY+511;
+output = warpedImage(nX,nY,:);
 imtool(output);
