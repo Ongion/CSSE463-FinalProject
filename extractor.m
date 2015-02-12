@@ -1,7 +1,9 @@
 img = imread('base.png');
+img = 255-img;
 img = img(:,:,1)+img(:,:,2)+img(:,:,3);
+%imwrite(img,'wat2.png');
 img = img>0;
-img = logical(1-img);
+%imwrite(img,'wat.png');
 limg = bwlabel(img);
 N = max(max(limg));
 %imtool(limg)
@@ -34,6 +36,4 @@ for k = 1:N
     end
     subimg = working(minr:maxr,minc:maxc);
     imwrite(subimg,strcat('output\',int2str(k),'.png'));
-    
-    
 end
