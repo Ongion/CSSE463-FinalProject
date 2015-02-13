@@ -13,7 +13,5 @@ for i = 1:9
     end
 end
 
-imshow(square);
-
 end
 
