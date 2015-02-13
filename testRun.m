@@ -1,5 +1,5 @@
 clear all;
-input = imread('test3.jpg');
+input = imread('testSudoku.jpg');
 resizedInput = imresize(input, 1);
 threshed = adaptiveThreshold(resizedInput,0.90, 50);
 
@@ -70,5 +70,7 @@ nX = nX:nX+511;
 nY = nY:nY+511;
 startOutput = warpedImage(nX,nY,:);
 threshedOut = adaptiveThreshold(startOutput,0.87, 25);
-output = bwareaopen(threshedOut,200);
+smallRemoved = bwareaopen(threshedOut,200);
+bigOnly = bwareaopen(threshedOut,600);
+output = xor(smallRemoved,bigOnly);
 imtool(output);
