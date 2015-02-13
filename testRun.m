@@ -1,5 +1,5 @@
 clear all;
-input = imread('testSudoku.jpg');
+input = imread('test3.jpg');
 resizedInput = imresize(input, 1);
 threshed = adaptiveThreshold(resizedInput,0.90, 50);
 
@@ -14,11 +14,11 @@ hopefullyBoard = labeledImg == sortIndexes(1);
 
 [H, theta, rho] = hough(hopefullyBoard);
 
-figure, imshow(imadjust(mat2gray(H)),[],'XData',theta,'YData',rho,...
-        'InitialMagnification','fit');
-xlabel('\theta (degrees)'), ylabel('\rho');
-axis on, axis normal, hold on;
-colormap(hot)
+% figure, imshow(imadjust(mat2gray(H)),[],'XData',theta,'YData',rho,...
+%         'InitialMagnification','fit');
+% xlabel('\theta (degrees)'), ylabel('\rho');
+% axis on, axis normal, hold on;
+% colormap(hot)
 
 %There shouldn't be more than 20 lines in a sudoku board
 peaks = houghpeaks(H,20); 
@@ -33,11 +33,11 @@ y = rho(peaks(:,1));
 x = x([top,bottom,left,right]);
 y = y([top,bottom,left,right]);
 
-peaks = makeNewPeaks(x, y, theta, rho, peaks);
-
-plot(x,y,'s','color','black');
-
-lines = houghlines(hopefullyBoard,theta,rho,peaks);
+% peaks = makeNewPeaks(x, y, theta, rho, peaks);
+% 
+% plot(x,y,'s','color','black');
+% 
+% lines = houghlines(hopefullyBoard,theta,rho,peaks);
 
 slopes = -cos(x*pi/180)./sin(x*pi/180);
 intercepts = y./sin(x*pi/180);
@@ -68,5 +68,7 @@ nY = floor(abs(Rout.XWorldLimits(1)))+3;
 nX = floor(abs(Rout.YWorldLimits(1)))+3;
 nX = nX:nX+511;
 nY = nY:nY+511;
-output = warpedImage(nX,nY,:);
+startOutput = warpedImage(nX,nY,:);
+threshedOut = adaptiveThreshold(startOutput,0.87, 25);
+output = bwareaopen(threshedOut,200);
 imtool(output);
