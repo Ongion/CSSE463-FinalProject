@@ -1,4 +1,4 @@
-img = imread('base.png');
+img = imread('base_num.png');
 img = 255-img;
 img = img(:,:,1)+img(:,:,2)+img(:,:,3);
 %imwrite(img,'wat2.png');
