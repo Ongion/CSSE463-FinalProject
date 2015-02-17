@@ -1,5 +1,5 @@
 clear all;
-input = imread('testSudoku.jpg');
+input = imread('test3.jpg');
 resizedInput = imresize(input, 1);
 threshed = adaptiveThreshold(resizedInput,0.90, 50);
 
