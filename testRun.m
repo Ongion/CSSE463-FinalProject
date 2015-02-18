@@ -70,7 +70,28 @@ nX = nX:nX+511;
 nY = nY:nY+511;
 startOutput = warpedImage(nX,nY,:);
 threshedOut = adaptiveThreshold(startOutput,0.87, 25);
-smallRemoved = bwareaopen(threshedOut,200);
+smallRemoved = bwareaopen(threshedOut,150);
 bigOnly = bwareaopen(threshedOut,600);
 output = xor(smallRemoved,bigOnly);
 imtool(output);
+
+% % Use the 'CharacterSet' parameter to constrain OCR
+% results = ocr(output, 'CharacterSet', '123456789', 'TextLayout','Block');
+% 
+% % Sort the character confidences
+% [sortedConf, sortedIndex] = sort(results.CharacterConfidences, 'descend');
+% 
+% % Keep indices associated with non-NaN confidences values
+% indexesNaNsRemoved = sortedIndex( ~isnan(sortedConf) & 0.5 <= sortedConf);
+% 
+% % Get the top ten indexes
+% %topTenIndexes = indexesNaNsRemoved(1:10);
+% 
+% % Select the top ten results
+% digits = num2cell(results.Text(indexesNaNsRemoved));
+% bboxes = results.CharacterBoundingBoxes(indexesNaNsRemoved, :);
+% 
+% Idigits = insertObjectAnnotation(startOutput, 'rectangle', bboxes, digits);
+% 
+% figure;
+% imshow(Idigits);
