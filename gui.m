@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 06-Feb-2015 06:18:05
+% Last Modified by GUIDE v2.5 18-Feb-2015 16:57:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -88,10 +88,11 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-fileName = uigetfile('*.jpg','select jpg file');
+fileName = uigetfile('*.jpg;*.tif;*.png;*.gif','select jpg file');
 handles.img = imread(fileName);
 axes(handles.axes1);
 imshow(fileName);
+guidata(hObject,handles);
 
 % --- Executes during object creation, after setting all properties.
 function axes1_CreateFcn(hObject, eventdata, handles)
@@ -108,4 +109,21 @@ function axes1_CreateFcn(hObject, eventdata, handles)
 function pushbutton2_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% set(handles.uitable2,'data',board,'ColumnName',colnames);
+axes(handles.axes2);
+handles.img = solveImage(handles.img);
+% img = imread('s.png');
+imshow(handles.img);
+
+
+% --- Executes when entered data in editable cell(s) in uitable2.
+function uitable2_CellEditCallback(hObject, eventdata, handles)
+% hObject    handle to uitable2 (see GCBO)
+% eventdata  structure with the following fields (see UITABLE)
+%	Indices: row and column indices of the cell(s) edited
+%	PreviousData: previous data for the cell(s) edited
+%	EditData: string(s) entered by the user
+%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
+%	Error: error string when failed to convert EditData to appropriate value for Data
 % handles    structure with handles and user data (see GUIDATA)
