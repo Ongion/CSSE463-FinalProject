@@ -9,26 +9,26 @@ labeledImg = bwlabel(threshed);
 blobInfo = regionprops(threshed,'area');
 
 allAreas = [blobInfo.Area];
-[sortedAreas, sortIndexes] = sort(allAreas,'descend');
-%imshow(threshed);
+[~, sortIndexes] = sort(allAreas,'descend');
 hopefullyBoard = labeledImg == sortIndexes(1);
 
 [H, theta, rho] = hough(hopefullyBoard);
+maxY = max(rho(:));
 
-% figure, imshow(imadjust(mat2gray(H)),[],'XData',theta,'YData',rho,...
-%         'InitialMagnification','fit');
-% xlabel('\theta (degrees)'), ylabel('\rho');
-% axis on, axis normal, hold on;
-% colormap(hot)
+ figure, imshow(imadjust(mat2gray(H)),[],'XData',theta,'YData',rho,...
+         'InitialMagnification','fit');
+ xlabel('\theta (degrees)'), ylabel('\rho');
+ axis on, axis normal, hold on;
+ colormap(hot)
 
 %There shouldn't be more than 20 lines in a sudoku board
-peaks = houghpeaks(H,20); 
+peaks = houghpeaks(H,20);
 
 
 x = theta(peaks(:,2));
 y = rho(peaks(:,1));
 
-[top,bottom,left,right] = findBorder(x,y,20);
+[top,bottom,left,right] = findBorder(x,y,30,maxY);
 
 
 x = x([top,bottom,left,right]);
@@ -36,9 +36,10 @@ y = y([top,bottom,left,right]);
 
 % peaks = makeNewPeaks(x, y, theta, rho, peaks);
 % 
-% plot(x,y,'s','color','black');
+ plot(x,y,'s','color','black');
+ hold off
 % 
-% lines = houghlines(hopefullyBoard,theta,rho,peaks);
+% lines = houghlines(hopefullyBoard,theta,rho,peaks)
 
 slopes = -cos(x*pi/180)./sin(x*pi/180);
 intercepts = y./sin(x*pi/180);
@@ -63,6 +64,7 @@ corners(4,2) = slopes(1)*corners(4,1)+intercepts(1);
 Xp = [1;1;512;512];
 Yp = [1;512;512;1];
 
+
 tform = fitgeotrans(corners,[Xp,Yp],'projective');
 [warpedImage, Rout] = imwarp(image,tform);
 nY = floor(abs(Rout.XWorldLimits(1)))+3;
@@ -71,7 +73,7 @@ nX = nX:nX+511;
 nY = nY:nY+511;
 startOutput = warpedImage(nX,nY,:);
 threshedOut = adaptiveThreshold(startOutput,0.87, 25);
-smallRemoved = bwareaopen(threshedOut,150);
+smallRemoved = bwareaopen(threshedOut,100);
 bigOnly = bwareaopen(threshedOut,600);
 output = xor(smallRemoved,bigOnly);
 

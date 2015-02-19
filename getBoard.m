@@ -8,7 +8,10 @@ for r = 1:9
         result = ocr(cropSquare(getSquare(image, r, c)),'CharacterSet', '123456789', 'TextLayout','Block');
         if numel(result.WordConfidences) > 0 % If we've detected at least one word...
             maxIndex = find(result.WordConfidences == max(result.WordConfidences),1);
-            board(r,c) = result.Words{maxIndex} - 48; % result is a character, subtract 48 to get numeric value
+            boardNum = strtrim(result.Words{maxIndex});
+            if numel(boardNum) == 1
+                board(r,c) = strtrim(result.Words{maxIndex}) - 48; % result is a character, subtract 48 to get numeric value
+            end
         end
     end
 end

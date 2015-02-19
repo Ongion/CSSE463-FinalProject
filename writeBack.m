@@ -4,11 +4,10 @@ function [ outputImage ] = writeBack(image, solvedBoard, corners, tform )
     
     invtform = invert(tform);
     warpedBack = imwarp(solvedBoard,invtform);
-    imtool(warpedBack)
     corners = floor(corners);
-    top = min(corners(:,2))
-    left = min(corners(:,1))
-    [topOffset, leftOffset, ~] = size(warpedBack)
+    top = min(corners(:,2));
+    left = min(corners(:,1));
+    [topOffset, leftOffset, ~] = size(warpedBack);
     outputImage = image;
     writeBackMask = repmat(sum(double(warpedBack),3) ~= 0,[1,1,3]);
     writeBackSpot = outputImage(top:top+topOffset-1,left:left+leftOffset-1,:);
